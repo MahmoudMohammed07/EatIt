@@ -20,6 +20,7 @@ import android.widget.TextView;
 import com.android.eatit.Common.Common;
 import com.android.eatit.Interface.ItemOnClickListener;
 import com.android.eatit.Model.Category;
+import com.android.eatit.Service.ListenOrder;
 import com.android.eatit.ViewHolder.MenuViewHolder;
 import com.firebase.ui.database.FirebaseRecyclerAdapter;
 import com.google.firebase.database.DatabaseReference;
@@ -77,6 +78,9 @@ public class Home extends AppCompatActivity
         recyclerMenu.setLayoutManager(layoutManager);
 
         loadMenu();
+
+        Intent serviceIntent = new Intent(Home.this, ListenOrder.class);
+        startService(serviceIntent);
 
     }
 
