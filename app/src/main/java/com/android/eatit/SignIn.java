@@ -41,39 +41,45 @@ public class SignIn extends AppCompatActivity {
             @Override
             public void onClick(View view) {
 
-                final ProgressDialog mDialog = new ProgressDialog(SignIn.this);
-                mDialog.setMessage("Please Wait...");
-                mDialog.show();
+                if (Common.isConnectedToInternet(getBaseContext())) {
 
-                tableUser.addValueEventListener(new ValueEventListener() {
-                    @Override
-                    public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                    final ProgressDialog mDialog = new ProgressDialog(SignIn.this);
+                    mDialog.setMessage("Please Wait...");
+                    mDialog.show();
 
-                        if (dataSnapshot.child(editPhone.getText().toString()).exists()) {
+                    tableUser.addValueEventListener(new ValueEventListener() {
+                        @Override
+                        public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
 
-                            mDialog.dismiss();
+                            if (dataSnapshot.child(editPhone.getText().toString()).exists()) {
 
-                            User user = dataSnapshot.child(editPhone.getText().toString()).getValue(User.class);
-                            user.setPhone(editPhone.getText().toString());
-                            if (user.getPassword().equals(editPassword.getText().toString())) {
-                                Intent homeIntent = new Intent(SignIn.this, Home.class);
-                                Common.currentUser = user;
-                                startActivity(homeIntent);
-                                finish();
+                                mDialog.dismiss();
+
+                                User user = dataSnapshot.child(editPhone.getText().toString()).getValue(User.class);
+                                user.setPhone(editPhone.getText().toString());
+                                if (user.getPassword().equals(editPassword.getText().toString())) {
+                                    Intent homeIntent = new Intent(SignIn.this, Home.class);
+                                    Common.currentUser = user;
+                                    startActivity(homeIntent);
+                                    finish();
+                                } else {
+                                    Toast.makeText(SignIn.this, R.string.wrong_password, Toast.LENGTH_SHORT).show();
+                                }
                             } else {
-                                Toast.makeText(SignIn.this, R.string.wrong_password, Toast.LENGTH_SHORT).show();
+                                mDialog.dismiss();
+                                Toast.makeText(SignIn.this, R.string.user_doesnt_exist, Toast.LENGTH_SHORT).show();
                             }
-                        } else {
-                            mDialog.dismiss();
-                            Toast.makeText(SignIn.this, R.string.user_doesnt_exist, Toast.LENGTH_SHORT).show();
                         }
-                    }
 
-                    @Override
-                    public void onCancelled(@NonNull DatabaseError databaseError) {
+                        @Override
+                        public void onCancelled(@NonNull DatabaseError databaseError) {
 
-                    }
-                });
+                        }
+                    });
+                } else {
+                    Toast.makeText(SignIn.this, "Please check your connection!", Toast.LENGTH_SHORT).show();
+                    return;
+                }
             }
         });
 

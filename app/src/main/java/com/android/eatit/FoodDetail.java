@@ -9,6 +9,7 @@ import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.android.eatit.Common.Common;
 import com.android.eatit.Database.Database;
 import com.android.eatit.Model.Food;
 import com.android.eatit.Model.Order;
@@ -72,7 +73,12 @@ public class FoodDetail extends AppCompatActivity {
         if (getIntent() != null)
             foodId = getIntent().getStringExtra("FoodId");
         if (!foodId.isEmpty()) {
-            getDetailFood(foodId);
+            if (Common.isConnectedToInternet(getBaseContext())) {
+                getDetailFood(foodId);
+            } else {
+                Toast.makeText(FoodDetail.this, "Please check your connection!", Toast.LENGTH_SHORT).show();
+                return;
+            }
         }
 
     }

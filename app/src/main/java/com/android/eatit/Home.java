@@ -16,6 +16,7 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.android.eatit.Common.Common;
 import com.android.eatit.Interface.ItemOnClickListener;
@@ -77,7 +78,12 @@ public class Home extends AppCompatActivity
         layoutManager = new LinearLayoutManager(this);
         recyclerMenu.setLayoutManager(layoutManager);
 
-        loadMenu();
+        if (Common.isConnectedToInternet(this)) {
+            loadMenu();
+        } else {
+            Toast.makeText(Home.this, "Please check your connection!", Toast.LENGTH_SHORT).show();
+            return;
+        }
 
         Intent serviceIntent = new Intent(Home.this, ListenOrder.class);
         startService(serviceIntent);
@@ -126,6 +132,11 @@ public class Home extends AppCompatActivity
 
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
+
+        if (item.getItemId() == R.id.refresh) {
+            loadMenu();
+        }
+
         return super.onOptionsItemSelected(item);
     }
 
