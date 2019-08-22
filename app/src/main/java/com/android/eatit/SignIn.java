@@ -18,11 +18,15 @@ import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
 import com.rengwuxian.materialedittext.MaterialEditText;
+import com.rey.material.widget.CheckBox;
+
+import io.paperdb.Paper;
 
 public class SignIn extends AppCompatActivity {
 
     EditText editPhone, editPassword;
     Button btnSignIn;
+    CheckBox cbRemember;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -33,6 +37,9 @@ public class SignIn extends AppCompatActivity {
         editPassword = (MaterialEditText) findViewById(R.id.editPassword);
 
         btnSignIn = (Button) findViewById(R.id.btnSignIn);
+        cbRemember = (CheckBox) findViewById(R.id.cb_remember);
+
+        Paper.init(this);
 
         FirebaseDatabase database = FirebaseDatabase.getInstance();
         final DatabaseReference tableUser = database.getReference("User");
@@ -42,6 +49,11 @@ public class SignIn extends AppCompatActivity {
             public void onClick(View view) {
 
                 if (Common.isConnectedToInternet(getBaseContext())) {
+
+                    if (cbRemember.isChecked()) {
+                        Paper.book().write(Common.USER_KEY, editPhone.getText().toString());
+                        Paper.book().write(Common.PWD_KEY, editPassword.getText().toString());
+                    }
 
                     final ProgressDialog mDialog = new ProgressDialog(SignIn.this);
                     mDialog.setMessage("Please Wait...");
