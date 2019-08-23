@@ -1,13 +1,17 @@
 package com.android.eatit;
 
+import android.app.AlertDialog;
 import android.app.ProgressDialog;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.support.annotation.NonNull;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.view.LayoutInflater;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import com.android.eatit.Common.Common;
@@ -27,6 +31,10 @@ public class SignIn extends AppCompatActivity {
     EditText editPhone, editPassword;
     Button btnSignIn;
     CheckBox cbRemember;
+    TextView txtForgotPwd;
+
+    FirebaseDatabase database;
+    DatabaseReference tableUser;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -38,11 +46,19 @@ public class SignIn extends AppCompatActivity {
 
         btnSignIn = (Button) findViewById(R.id.btnSignIn);
         cbRemember = (CheckBox) findViewById(R.id.cb_remember);
+        txtForgotPwd = (TextView) findViewById(R.id.txtForgotPwd);
 
         Paper.init(this);
 
-        FirebaseDatabase database = FirebaseDatabase.getInstance();
-        final DatabaseReference tableUser = database.getReference("User");
+        database = FirebaseDatabase.getInstance();
+        tableUser = database.getReference("User");
+
+        txtForgotPwd.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                showForgotPwdDialog();
+            }
+        });
 
         btnSignIn.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -95,5 +111,53 @@ public class SignIn extends AppCompatActivity {
             }
         });
 
+    }
+
+    private void showForgotPwdDialog() {
+        AlertDialog.Builder builder = new AlertDialog.Builder(this);
+        builder.setTitle("Forgot Password");
+        builder.setMessage("Enter your secure code");
+
+        LayoutInflater inflater = this.getLayoutInflater();
+        View forgotView = inflater.inflate(R.layout.forgot_password_layout, null);
+
+        builder.setView(forgotView);
+        builder.setIcon(R.drawable.ic_security);
+
+        final MaterialEditText editPhone = (MaterialEditText) forgotView.findViewById(R.id.editPhone);
+        final MaterialEditText editSecureCode = (MaterialEditText) forgotView.findViewById(R.id.editSecureCode);
+
+        builder.setPositiveButton("YES", new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialogInterface, int i) {
+                tableUser.addValueEventListener(new ValueEventListener() {
+                    @Override
+                    public void onDataChange(DataSnapshot dataSnapshot) {
+                        User user = dataSnapshot.child(editPhone.getText().toString())
+                                .getValue(User.class);
+
+                        if (user.getSecureCode().equals(editSecureCode.getText().toString())) {
+                            Toast.makeText(SignIn.this, "Your password: " + user.getPassword(), Toast.LENGTH_LONG).show();
+                        } else {
+                            Toast.makeText(SignIn.this, "Wrong secure code!", Toast.LENGTH_SHORT).show();
+                        }
+                    }
+
+                    @Override
+                    public void onCancelled(DatabaseError databaseError) {
+
+                    }
+                });
+            }
+        });
+
+        builder.setNegativeButton("NO", new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialogInterface, int i) {
+                dialogInterface.dismiss();
+            }
+        });
+
+        builder.show();
     }
 }

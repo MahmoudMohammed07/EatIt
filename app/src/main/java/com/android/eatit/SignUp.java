@@ -20,7 +20,7 @@ import com.rengwuxian.materialedittext.MaterialEditText;
 
 public class SignUp extends AppCompatActivity {
 
-    EditText editPhone, editName, editPassword;
+    EditText editPhone, editName, editPassword, editSecureCode;
     Button btnSignUp;
 
     @Override
@@ -31,6 +31,7 @@ public class SignUp extends AppCompatActivity {
         editPhone = (MaterialEditText) findViewById(R.id.editPhone);
         editName = (MaterialEditText) findViewById(R.id.editName);
         editPassword = (MaterialEditText) findViewById(R.id.editPassword);
+        editSecureCode = (MaterialEditText) findViewById(R.id.editSecureCode);
 
         btnSignUp = (Button) findViewById(R.id.btnSignUp);
 
@@ -55,7 +56,8 @@ public class SignUp extends AppCompatActivity {
                                 Toast.makeText(SignUp.this, R.string.phoneNumber_exists, Toast.LENGTH_SHORT).show();
                             } else {
                                 mDialog.dismiss();
-                                User user = new User(editName.getText().toString(), editPassword.getText().toString());
+                                User user = new User(editName.getText().toString(),
+                                        editPassword.getText().toString(), editSecureCode.getText().toString());
                                 tableUser.child(editPhone.getText().toString()).setValue(user);
                                 Toast.makeText(SignUp.this, R.string.signUp_succeeded, Toast.LENGTH_SHORT).show();
                                 finish();

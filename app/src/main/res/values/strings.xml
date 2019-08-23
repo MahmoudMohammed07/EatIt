@@ -25,4 +25,7 @@
     <string name="menu_share">Share</string>
     <string name="menu_send">Send</string>
     <string name="refresh">Refresh</string>
+    <string name="secure_code">Secure Code</string>
+
+    <string name="forgot_pwd"><u>Forgot Password?</u></string>
 </resources>
