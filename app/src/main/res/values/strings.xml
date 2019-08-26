@@ -28,4 +28,6 @@
     <string name="secure_code">Secure Code</string>
 
     <string name="forgot_pwd"><u>Forgot Password?</u></string>
+    <string name="address">Address</string>
+    <string name="comment">Comment</string>
 </resources>
