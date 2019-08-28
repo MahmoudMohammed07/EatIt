@@ -5,12 +5,21 @@ import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
 
 import com.android.eatit.Model.User;
+import com.android.eatit.Remote.APIService;
+import com.android.eatit.Remote.RetrofitClient;
 
 public class Common {
     public static User currentUser;
+
+    private static final String BASE_URL = "https://fcm.googleapis.com/";
+
     public static final String DELETE = "Delete";
     public static final String USER_KEY = "User";
     public static final String PWD_KEY = "Password";
+
+    public static APIService getFCMService() {
+        return RetrofitClient.getClient(BASE_URL).create(APIService.class);
+    }
 
     public static String convertCodeToStatus(String status) {
         if (status.equals("0")) {

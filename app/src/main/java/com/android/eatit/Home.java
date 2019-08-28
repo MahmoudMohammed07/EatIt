@@ -21,11 +21,12 @@ import android.widget.Toast;
 import com.android.eatit.Common.Common;
 import com.android.eatit.Interface.ItemOnClickListener;
 import com.android.eatit.Model.Category;
-import com.android.eatit.Service.ListenOrder;
+import com.android.eatit.Model.Token;
 import com.android.eatit.ViewHolder.MenuViewHolder;
 import com.firebase.ui.database.FirebaseRecyclerAdapter;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.iid.FirebaseInstanceId;
 import com.squareup.picasso.Picasso;
 
 import io.paperdb.Paper;
@@ -89,9 +90,15 @@ public class Home extends AppCompatActivity
             return;
         }
 
-        Intent serviceIntent = new Intent(Home.this, ListenOrder.class);
-        startService(serviceIntent);
+        updateToken(FirebaseInstanceId.getInstance().getToken());
 
+    }
+
+    private void updateToken(String token) {
+        FirebaseDatabase database = FirebaseDatabase.getInstance();
+        DatabaseReference tokens = database.getReference("Token");
+        Token data = new Token(token, false);
+        tokens.child(Common.currentUser.getPhone()).setValue(data);
     }
 
     private void loadMenu() {
