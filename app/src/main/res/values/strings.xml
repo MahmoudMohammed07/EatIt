@@ -30,4 +30,6 @@
     <string name="forgot_pwd"><u>Forgot Password?</u></string>
     <string name="address">Address</string>
     <string name="comment">Comment</string>
+    <string name="new_password">New Password</string>
+    <string name="repeat_password">Repeat Password</string>
 </resources>

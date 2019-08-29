@@ -75,7 +75,7 @@ public class SignIn extends AppCompatActivity {
                     mDialog.setMessage("Please Wait...");
                     mDialog.show();
 
-                    tableUser.addValueEventListener(new ValueEventListener() {
+                    tableUser.addListenerForSingleValueEvent(new ValueEventListener() {
                         @Override
                         public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
 
@@ -89,6 +89,7 @@ public class SignIn extends AppCompatActivity {
                                     Intent homeIntent = new Intent(SignIn.this, Home.class);
                                     Common.currentUser = user;
                                     startActivity(homeIntent);
+                                    tableUser.removeEventListener(this);
                                     finish();
                                 } else {
                                     Toast.makeText(SignIn.this, R.string.wrong_password, Toast.LENGTH_SHORT).show();

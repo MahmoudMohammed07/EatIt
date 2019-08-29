@@ -1,17 +1,21 @@
 package com.android.eatit;
 
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.Bundle;
+import android.support.annotation.NonNull;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.NavigationView;
 import android.support.v4.view.GravityCompat;
 import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.ActionBarDrawerToggle;
+import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.RecyclerView.LayoutManager;
 import android.support.v7.widget.Toolbar;
+import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
@@ -24,11 +28,19 @@ import com.android.eatit.Model.Category;
 import com.android.eatit.Model.Token;
 import com.android.eatit.ViewHolder.MenuViewHolder;
 import com.firebase.ui.database.FirebaseRecyclerAdapter;
+import com.google.android.gms.tasks.OnCompleteListener;
+import com.google.android.gms.tasks.OnFailureListener;
+import com.google.android.gms.tasks.Task;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.iid.FirebaseInstanceId;
+import com.rengwuxian.materialedittext.MaterialEditText;
 import com.squareup.picasso.Picasso;
 
+import java.util.HashMap;
+import java.util.Map;
+
+import dmax.dialog.SpotsDialog;
 import io.paperdb.Paper;
 
 public class Home extends AppCompatActivity
@@ -177,10 +189,81 @@ public class Home extends AppCompatActivity
             logoutIntent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
             startActivity(logoutIntent);
 
+        } else if (id == R.id.nav_change_pwd) {
+            showChangePasswordDialog();
         }
 
         DrawerLayout drawer = findViewById(R.id.drawer_layout);
         drawer.closeDrawer(GravityCompat.START);
         return true;
+    }
+
+    private void showChangePasswordDialog() {
+        AlertDialog.Builder builder = new AlertDialog.Builder(Home.this);
+        builder.setTitle("Change Password");
+        builder.setMessage("Please fill all information");
+
+        LayoutInflater inflater = LayoutInflater.from(this);
+        View layoutPwd = inflater.inflate(R.layout.change_password_layout, null);
+
+        final MaterialEditText editPassword = (MaterialEditText) layoutPwd.findViewById(R.id.editPassword);
+        final MaterialEditText editNewPassword = (MaterialEditText) layoutPwd.findViewById(R.id.editNewPassword);
+        final MaterialEditText editRepeatPassword = (MaterialEditText) layoutPwd.findViewById(R.id.editRepeatPassword);
+
+        builder.setView(layoutPwd);
+
+        builder.setPositiveButton("Change", new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialogInterface, int i) {
+                final android.app.AlertDialog waitingDialog = new SpotsDialog(Home.this);
+                waitingDialog.show();
+
+                if (editPassword.getText().toString().equals(Common.currentUser.getPassword())) {
+
+                    if (editNewPassword.getText().toString().equals(editRepeatPassword.getText().toString())) {
+
+                        Map<String, Object> passwordUpdate = new HashMap<>();
+                        passwordUpdate.put("password", editNewPassword.getText().toString());
+
+                        DatabaseReference user = FirebaseDatabase.getInstance().getReference("User");
+                        user.child(Common.currentUser.getPhone())
+                                .updateChildren(passwordUpdate)
+                                .addOnCompleteListener(new OnCompleteListener<Void>() {
+                                    @Override
+                                    public void onComplete(@NonNull Task<Void> task) {
+                                        waitingDialog.dismiss();
+                                        Common.currentUser.setPassword(editNewPassword.getText().toString());
+                                        Toast.makeText(Home.this, "Password has been changed",
+                                                Toast.LENGTH_SHORT).show();
+                                    }
+                                })
+                                .addOnFailureListener(new OnFailureListener() {
+                                    @Override
+                                    public void onFailure(@NonNull Exception e) {
+                                        Toast.makeText(Home.this, e.getMessage(), Toast.LENGTH_SHORT).show();
+                                    }
+                                });
+
+                    } else {
+                        waitingDialog.dismiss();
+                        Toast.makeText(Home.this, "New password doesn't match", Toast.LENGTH_SHORT).show();
+                    }
+
+                } else {
+                    waitingDialog.dismiss();
+                    Toast.makeText(Home.this, "Wrong old password!", Toast.LENGTH_SHORT).show();
+                }
+
+            }
+        });
+
+        builder.setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialogInterface, int i) {
+                dialogInterface.dismiss();
+            }
+        });
+
+        builder.show();
     }
 }
