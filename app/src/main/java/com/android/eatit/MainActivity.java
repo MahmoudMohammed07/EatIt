@@ -12,6 +12,7 @@ import android.widget.Toast;
 
 import com.android.eatit.Common.Common;
 import com.android.eatit.Model.User;
+import com.facebook.FacebookSdk;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
@@ -28,6 +29,7 @@ public class MainActivity extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        FacebookSdk.sdkInitialize(getApplicationContext());
         setContentView(R.layout.activity_main);
 
         btnSignUp = (Button) findViewById(R.id.btnSignUp);

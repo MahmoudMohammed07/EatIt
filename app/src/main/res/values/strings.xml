@@ -32,4 +32,7 @@
     <string name="comment">Comment</string>
     <string name="new_password">New Password</string>
     <string name="repeat_password">Repeat Password</string>
+
+    <string name="facebook_app_id">503727046869374</string>
+    <string name="facebook_login_protocol_name">fb503727046869374</string>
 </resources>

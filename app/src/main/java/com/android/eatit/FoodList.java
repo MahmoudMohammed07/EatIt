@@ -1,6 +1,8 @@
 package com.android.eatit;
 
 import android.content.Intent;
+import android.graphics.Bitmap;
+import android.graphics.drawable.Drawable;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.LinearLayoutManager;
@@ -16,6 +18,10 @@ import com.android.eatit.Database.Database;
 import com.android.eatit.Interface.ItemOnClickListener;
 import com.android.eatit.Model.Food;
 import com.android.eatit.ViewHolder.FoodViewHolder;
+import com.facebook.CallbackManager;
+import com.facebook.share.model.SharePhoto;
+import com.facebook.share.model.SharePhotoContent;
+import com.facebook.share.widget.ShareDialog;
 import com.firebase.ui.database.FirebaseRecyclerAdapter;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
@@ -24,6 +30,7 @@ import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
 import com.mancj.materialsearchbar.MaterialSearchBar;
 import com.squareup.picasso.Picasso;
+import com.squareup.picasso.Target;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -47,10 +54,41 @@ public class FoodList extends AppCompatActivity {
 
     Database localDB;
 
+    CallbackManager callbackManager;
+    ShareDialog shareDialog;
+
+    Target target = new Target() {
+        @Override
+        public void onBitmapLoaded(Bitmap bitmap, Picasso.LoadedFrom from) {
+            SharePhoto photo = new SharePhoto.Builder()
+                    .setBitmap(bitmap)
+                    .build();
+            if (ShareDialog.canShow(SharePhotoContent.class)) {
+                SharePhotoContent content = new SharePhotoContent.Builder()
+                        .addPhoto(photo)
+                        .build();
+                shareDialog.show(content);
+            }
+        }
+
+        @Override
+        public void onBitmapFailed(Drawable errorDrawable) {
+
+        }
+
+        @Override
+        public void onPrepareLoad(Drawable placeHolderDrawable) {
+
+        }
+    };
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_food_list);
+
+        callbackManager = CallbackManager.Factory.create();
+        shareDialog = new ShareDialog(this);
 
         database = FirebaseDatabase.getInstance();
         foodList = database.getReference("Foods");
@@ -180,6 +218,15 @@ public class FoodList extends AppCompatActivity {
                 if (localDB.isFavorites(adapter.getRef(position).getKey())) {
                     viewHolder.favImage.setImageResource(R.drawable.ic_favorite);
                 }
+
+                viewHolder.shareImage.setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View view) {
+                        Picasso.with(getApplicationContext())
+                                .load(model.getImage())
+                                .into(target);
+                    }
+                });
 
                 viewHolder.favImage.setOnClickListener(new View.OnClickListener() {
                     @Override
