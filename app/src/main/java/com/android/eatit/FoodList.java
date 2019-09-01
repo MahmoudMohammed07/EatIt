@@ -4,6 +4,7 @@ import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.drawable.Drawable;
 import android.os.Bundle;
+import android.support.annotation.NonNull;
 import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.LinearLayoutManager;
@@ -11,7 +12,9 @@ import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.RecyclerView.LayoutManager;
 import android.text.Editable;
 import android.text.TextWatcher;
+import android.view.LayoutInflater;
 import android.view.View;
+import android.view.ViewGroup;
 import android.widget.Toast;
 
 import com.android.eatit.Common.Common;
@@ -24,10 +27,12 @@ import com.facebook.share.model.SharePhoto;
 import com.facebook.share.model.SharePhotoContent;
 import com.facebook.share.widget.ShareDialog;
 import com.firebase.ui.database.FirebaseRecyclerAdapter;
+import com.firebase.ui.database.FirebaseRecyclerOptions;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.database.Query;
 import com.google.firebase.database.ValueEventListener;
 import com.mancj.materialsearchbar.MaterialSearchBar;
 import com.squareup.picasso.Picasso;
@@ -196,10 +201,22 @@ public class FoodList extends AppCompatActivity {
     }
 
     private void startSearch(CharSequence text) {
-        searchAdapter = new FirebaseRecyclerAdapter<Food, FoodViewHolder>(Food.class, R.layout.food_item,
-                FoodViewHolder.class, foodList.orderByChild("name").equalTo(text.toString())) {
+
+        Query searchName = foodList.orderByChild("name").equalTo(text.toString());
+        FirebaseRecyclerOptions<Food> options = new FirebaseRecyclerOptions.Builder<Food>()
+                .setQuery(searchName, Food.class)
+                .build();
+
+        searchAdapter = new FirebaseRecyclerAdapter<Food, FoodViewHolder>(options) {
             @Override
-            protected void populateViewHolder(FoodViewHolder viewHolder, Food model, int position) {
+            public FoodViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
+                View itemView = LayoutInflater.from(parent.getContext())
+                        .inflate(R.layout.food_item, parent, false);
+                return new FoodViewHolder(itemView);
+            }
+
+            @Override
+            protected void onBindViewHolder(@NonNull FoodViewHolder viewHolder, int position, @NonNull Food model) {
                 viewHolder.txtFoodName.setText(model.getName());
                 Picasso.with(getBaseContext()).load(model.getImage())
                         .into(viewHolder.foodImageView);
@@ -214,6 +231,7 @@ public class FoodList extends AppCompatActivity {
                 });
             }
         };
+        searchAdapter.startListening();
         recyclerView.setAdapter(searchAdapter);
     }
 
@@ -236,11 +254,21 @@ public class FoodList extends AppCompatActivity {
     }
 
     private void loadFoodList(String categoryId) {
-        adapter = new FirebaseRecyclerAdapter<Food,
-                FoodViewHolder>(Food.class, R.layout.food_item, FoodViewHolder.class,
-                foodList.orderByChild("menuId").equalTo(categoryId)) {
+
+        FirebaseRecyclerOptions<Food> options = new FirebaseRecyclerOptions.Builder<Food>()
+                .setQuery(foodList.orderByChild("menuId").equalTo(categoryId), Food.class)
+                .build();
+
+        adapter = new FirebaseRecyclerAdapter<Food, FoodViewHolder>(options) {
             @Override
-            protected void populateViewHolder(final FoodViewHolder viewHolder, final Food model, final int position) {
+            public FoodViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
+                View itemView = LayoutInflater.from(parent.getContext())
+                        .inflate(R.layout.food_item, parent, false);
+                return new FoodViewHolder(itemView);
+            }
+
+            @Override
+            protected void onBindViewHolder(@NonNull final FoodViewHolder viewHolder, final int position, @NonNull final Food model) {
                 viewHolder.txtFoodName.setText(model.getName());
                 viewHolder.foodPrice.setText(String.format("$ %s", model.getPrice()));
                 Picasso.with(getBaseContext()).load(model.getImage())
@@ -288,7 +316,23 @@ public class FoodList extends AppCompatActivity {
                 });
             }
         };
+        adapter.startListening();
         recyclerView.setAdapter(adapter);
         refreshLayout.setRefreshing(false);
+    }
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+        loadFoodList(categoryId);
+    }
+
+    @Override
+    protected void onStop() {
+        super.onStop();
+        if (adapter != null)
+            adapter.stopListening();
+        if (searchAdapter != null)
+            searchAdapter.stopListening();
     }
 }

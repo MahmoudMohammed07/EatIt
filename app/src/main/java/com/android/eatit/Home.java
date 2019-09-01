@@ -20,6 +20,7 @@ import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
+import android.view.ViewGroup;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -29,6 +30,7 @@ import com.android.eatit.Model.Category;
 import com.android.eatit.Model.Token;
 import com.android.eatit.ViewHolder.MenuViewHolder;
 import com.firebase.ui.database.FirebaseRecyclerAdapter;
+import com.firebase.ui.database.FirebaseRecyclerOptions;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.Task;
@@ -141,10 +143,20 @@ public class Home extends AppCompatActivity
 
     private void loadMenu() {
 
-        adapter = new FirebaseRecyclerAdapter<Category,
-                MenuViewHolder>(Category.class, R.layout.menu_item, MenuViewHolder.class, category) {
+        FirebaseRecyclerOptions<Category> options = new FirebaseRecyclerOptions.Builder<Category>()
+                .setQuery(category, Category.class)
+                .build();
+
+        adapter = new FirebaseRecyclerAdapter<Category, MenuViewHolder>(options) {
             @Override
-            protected void populateViewHolder(MenuViewHolder viewHolder, Category model, int position) {
+            public MenuViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
+                View itemView = LayoutInflater.from(parent.getContext())
+                        .inflate(R.layout.menu_item, parent, false);
+                return new MenuViewHolder(itemView);
+            }
+
+            @Override
+            protected void onBindViewHolder(@NonNull MenuViewHolder viewHolder, int position, @NonNull Category model) {
                 viewHolder.txtMenuName.setText(model.getName());
                 Picasso.with(getBaseContext()).load(model.getImage())
                         .into(viewHolder.menuImageView);
@@ -159,8 +171,22 @@ public class Home extends AppCompatActivity
                 });
             }
         };
+        adapter.startListening();
         recyclerMenu.setAdapter(adapter);
         refreshLayout.setRefreshing(false);
+    }
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+        loadMenu();
+    }
+
+    @Override
+    protected void onStop() {
+        super.onStop();
+        if (adapter != null)
+            adapter.stopListening();
     }
 
     @Override
