@@ -8,6 +8,7 @@ import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.NavigationView;
 import android.support.v4.view.GravityCompat;
 import android.support.v4.widget.DrawerLayout;
+import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.app.ActionBarDrawerToggle;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
@@ -56,6 +57,8 @@ public class Home extends AppCompatActivity
 
     FirebaseRecyclerAdapter<Category, MenuViewHolder> adapter;
 
+    SwipeRefreshLayout refreshLayout;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -64,6 +67,36 @@ public class Home extends AppCompatActivity
         Toolbar toolbar = findViewById(R.id.toolbar);
         toolbar.setTitle("Menu");
         setSupportActionBar(toolbar);
+
+        refreshLayout = (SwipeRefreshLayout) findViewById(R.id.swipe_layout);
+        refreshLayout.setColorSchemeResources(R.color.colorPrimary,
+                android.R.color.holo_green_dark,
+                android.R.color.holo_orange_dark,
+                android.R.color.holo_blue_dark);
+
+        refreshLayout.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
+            @Override
+            public void onRefresh() {
+                if (Common.isConnectedToInternet(Home.this)) {
+                    loadMenu();
+                } else {
+                    Toast.makeText(Home.this, "Please check your connection!", Toast.LENGTH_SHORT).show();
+                    return;
+                }
+            }
+        });
+
+        refreshLayout.post(new Runnable() {
+            @Override
+            public void run() {
+                if (Common.isConnectedToInternet(Home.this)) {
+                    loadMenu();
+                } else {
+                    Toast.makeText(Home.this, "Please check your connection!", Toast.LENGTH_SHORT).show();
+                    return;
+                }
+            }
+        });
 
         database = FirebaseDatabase.getInstance();
         category = database.getReference("Category");
@@ -94,13 +127,6 @@ public class Home extends AppCompatActivity
         recyclerMenu.setHasFixedSize(true);
         layoutManager = new LinearLayoutManager(this);
         recyclerMenu.setLayoutManager(layoutManager);
-
-        if (Common.isConnectedToInternet(this)) {
-            loadMenu();
-        } else {
-            Toast.makeText(Home.this, "Please check your connection!", Toast.LENGTH_SHORT).show();
-            return;
-        }
 
         updateToken(FirebaseInstanceId.getInstance().getToken());
 
@@ -134,6 +160,7 @@ public class Home extends AppCompatActivity
             }
         };
         recyclerMenu.setAdapter(adapter);
+        refreshLayout.setRefreshing(false);
     }
 
     @Override

@@ -4,6 +4,7 @@ import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.drawable.Drawable;
 import android.os.Bundle;
+import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
@@ -57,6 +58,8 @@ public class FoodList extends AppCompatActivity {
     CallbackManager callbackManager;
     ShareDialog shareDialog;
 
+    SwipeRefreshLayout refreshLayout;
+
     Target target = new Target() {
         @Override
         public void onBitmapLoaded(Bitmap bitmap, Picasso.LoadedFrom from) {
@@ -87,6 +90,44 @@ public class FoodList extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_food_list);
 
+        refreshLayout = (SwipeRefreshLayout) findViewById(R.id.swipe_layout);
+        refreshLayout.setColorSchemeResources(R.color.colorPrimary,
+                android.R.color.holo_green_dark,
+                android.R.color.holo_orange_dark,
+                android.R.color.holo_blue_dark);
+
+        refreshLayout.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
+            @Override
+            public void onRefresh() {
+                if (getIntent() != null)
+                    categoryId = getIntent().getStringExtra("CategoryId");
+                if (!categoryId.isEmpty()) {
+                    if (Common.isConnectedToInternet(getBaseContext())) {
+                        loadFoodList(categoryId);
+                    } else {
+                        Toast.makeText(FoodList.this, "Please check your connection!", Toast.LENGTH_SHORT).show();
+                        return;
+                    }
+                }
+            }
+        });
+
+        refreshLayout.post(new Runnable() {
+            @Override
+            public void run() {
+                if (getIntent() != null)
+                    categoryId = getIntent().getStringExtra("CategoryId");
+                if (!categoryId.isEmpty()) {
+                    if (Common.isConnectedToInternet(getBaseContext())) {
+                        loadFoodList(categoryId);
+                    } else {
+                        Toast.makeText(FoodList.this, "Please check your connection!", Toast.LENGTH_SHORT).show();
+                        return;
+                    }
+                }
+            }
+        });
+
         callbackManager = CallbackManager.Factory.create();
         shareDialog = new ShareDialog(this);
 
@@ -100,16 +141,6 @@ public class FoodList extends AppCompatActivity {
         layoutManager = new LinearLayoutManager(this);
         recyclerView.setLayoutManager(layoutManager);
 
-        if (getIntent() != null)
-            categoryId = getIntent().getStringExtra("CategoryId");
-        if (!categoryId.isEmpty()) {
-            if (Common.isConnectedToInternet(getBaseContext())) {
-                loadFoodList(categoryId);
-            } else {
-                Toast.makeText(FoodList.this, "Please check your connection!", Toast.LENGTH_SHORT).show();
-                return;
-            }
-        }
 
         //Search
         materialSearchBar = (MaterialSearchBar) findViewById(R.id.searchBar);
@@ -257,5 +288,6 @@ public class FoodList extends AppCompatActivity {
             }
         };
         recyclerView.setAdapter(adapter);
+        refreshLayout.setRefreshing(false);
     }
 }
