@@ -2,26 +2,31 @@
 <android.support.v7.widget.CardView xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
-    android:layout_height="200dp"
+    android:layout_height="wrap_content"
     android:layout_marginBottom="8dp"
-    app:cardElevation="4dp">
+    app:cardCornerRadius="0dp"
+    app:cardElevation="10dp">
 
-    <RelativeLayout
+    <LinearLayout
         android:layout_width="match_parent"
-        android:layout_height="match_parent">
+        android:layout_height="match_parent"
+        android:orientation="vertical"
+        android:weightSum="5">
 
         <ImageView
             android:id="@+id/food_image"
             android:layout_width="match_parent"
-            android:layout_height="match_parent"
+            android:layout_height="0dp"
+            android:layout_weight="4"
             android:scaleType="centerCrop"
             android:src="@drawable/my_bg" />
 
         <LinearLayout
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_alignParentBottom="true"
-            android:background="#4f0e0d0e"
+            android:layout_height="0dp"
+            android:layout_margin="10dp"
+            android:layout_weight="1"
+            android:gravity="center_vertical"
             android:orientation="horizontal"
             android:weightSum="10">
 
@@ -30,9 +35,7 @@
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:layout_weight="8"
-                android:gravity="center"
                 android:text="Food Name"
-                android:textColor="@android:color/white"
                 android:textSize="20sp" />
 
             <ImageView
@@ -41,7 +44,7 @@
                 android:layout_height="wrap_content"
                 android:layout_weight="1"
                 android:src="@drawable/ic_share"
-                android:tint="@android:color/white" />
+                android:tint="@color/colorAccent" />
 
             <ImageView
                 android:id="@+id/fav"
@@ -49,10 +52,20 @@
                 android:layout_height="wrap_content"
                 android:layout_weight="1"
                 android:src="@drawable/ic_favorite_border"
-                android:tint="@android:color/white" />
+                android:tint="@color/colorAccent" />
 
         </LinearLayout>
 
-    </RelativeLayout>
+        <TextView
+            android:id="@+id/food_price"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_margin="10dp"
+            android:layout_weight="8"
+            android:gravity="center"
+            android:text="$100"
+            android:textSize="20sp" />
+
+    </LinearLayout>
 
 </android.support.v7.widget.CardView>

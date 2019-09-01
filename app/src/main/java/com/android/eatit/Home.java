@@ -12,7 +12,7 @@ import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.app.ActionBarDrawerToggle;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
-import android.support.v7.widget.LinearLayoutManager;
+import android.support.v7.widget.GridLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.RecyclerView.LayoutManager;
 import android.support.v7.widget.Toolbar;
@@ -125,7 +125,7 @@ public class Home extends AppCompatActivity
 
         recyclerMenu = (RecyclerView) findViewById(R.id.recycler_menu);
         recyclerMenu.setHasFixedSize(true);
-        layoutManager = new LinearLayoutManager(this);
+        layoutManager = new GridLayoutManager(this, 2);
         recyclerMenu.setLayoutManager(layoutManager);
 
         updateToken(FirebaseInstanceId.getInstance().getToken());
