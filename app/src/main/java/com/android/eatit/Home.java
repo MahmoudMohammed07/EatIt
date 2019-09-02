@@ -4,7 +4,6 @@ import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
-import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.NavigationView;
 import android.support.v4.view.GravityCompat;
 import android.support.v4.widget.DrawerLayout;
@@ -24,7 +23,9 @@ import android.view.ViewGroup;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.andremion.counterfab.CounterFab;
 import com.android.eatit.Common.Common;
+import com.android.eatit.Database.Database;
 import com.android.eatit.Interface.ItemOnClickListener;
 import com.android.eatit.Model.Category;
 import com.android.eatit.Model.Token;
@@ -60,6 +61,8 @@ public class Home extends AppCompatActivity
     FirebaseRecyclerAdapter<Category, MenuViewHolder> adapter;
 
     SwipeRefreshLayout refreshLayout;
+
+    CounterFab fab;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -105,7 +108,7 @@ public class Home extends AppCompatActivity
 
         Paper.init(this);
 
-        FloatingActionButton fab = findViewById(R.id.fab);
+        fab = findViewById(R.id.fab);
         fab.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
@@ -113,6 +116,9 @@ public class Home extends AppCompatActivity
                 startActivity(cartIntent);
             }
         });
+
+        fab.setCount(new Database(this).getCountCart());
+
         DrawerLayout drawer = findViewById(R.id.drawer_layout);
         NavigationView navigationView = findViewById(R.id.nav_view);
         ActionBarDrawerToggle toggle = new ActionBarDrawerToggle(
@@ -180,6 +186,7 @@ public class Home extends AppCompatActivity
     protected void onResume() {
         super.onResume();
         loadMenu();
+        fab.setCount(new Database(this).getCountCart());
     }
 
     @Override

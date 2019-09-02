@@ -56,15 +56,32 @@
 
         </LinearLayout>
 
-        <TextView
-            android:id="@+id/food_price"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_margin="10dp"
-            android:layout_weight="8"
-            android:gravity="center"
-            android:text="$100"
-            android:textSize="20sp" />
+        <RelativeLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content">
+
+            <TextView
+                android:id="@+id/food_price"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_margin="10dp"
+                android:gravity="center"
+                android:text="$100"
+                android:textSize="20sp" />
+
+            <ImageView
+                android:id="@+id/btn_quick_cart"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_alignParentEnd="true"
+                android:layout_alignParentRight="true"
+                android:layout_centerVertical="true"
+                android:layout_marginEnd="30dp"
+                android:layout_marginRight="30dp"
+                android:src="@drawable/ic_shopping_cart"
+                android:tint="@color/colorAccent" />
+
+        </RelativeLayout>
 
     </LinearLayout>
 

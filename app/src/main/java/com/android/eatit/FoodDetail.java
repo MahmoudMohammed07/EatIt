@@ -10,6 +10,7 @@ import android.widget.RatingBar;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.andremion.counterfab.CounterFab;
 import com.android.eatit.Common.Common;
 import com.android.eatit.Database.Database;
 import com.android.eatit.Model.Food;
@@ -35,7 +36,8 @@ public class FoodDetail extends AppCompatActivity implements RatingDialogListene
     TextView foodName, foodPrice, foodDescription;
     ImageView foodImage;
     CollapsingToolbarLayout collapsingToolbarLayout;
-    FloatingActionButton fabCart, fabRating;
+    FloatingActionButton fabRating;
+    CounterFab fabCart;
     ElegantNumberButton numberButton;
     RatingBar ratingBar;
 
@@ -57,7 +59,7 @@ public class FoodDetail extends AppCompatActivity implements RatingDialogListene
         ratingTable = database.getReference("Rating");
 
         numberButton = (ElegantNumberButton) findViewById(R.id.number_button);
-        fabCart = (FloatingActionButton) findViewById(R.id.fab_cart);
+        fabCart = (CounterFab) findViewById(R.id.fab_cart);
         fabRating = (FloatingActionButton) findViewById(R.id.fab_Rating);
         ratingBar = (RatingBar) findViewById(R.id.ratingBar);
 
@@ -81,6 +83,8 @@ public class FoodDetail extends AppCompatActivity implements RatingDialogListene
                 Toast.makeText(FoodDetail.this, "Added To Cart", Toast.LENGTH_SHORT).show();
             }
         });
+
+        fabCart.setCount(new Database(this).getCountCart());
 
         foodDescription = (TextView) findViewById(R.id.food_description);
         foodName = (TextView) findViewById(R.id.food_name);

@@ -11,7 +11,7 @@ import com.android.eatit.R;
 public class FoodViewHolder extends RecyclerView.ViewHolder implements View.OnClickListener {
 
     public TextView txtFoodName, foodPrice;
-    public ImageView foodImageView, favImage, shareImage;
+    public ImageView foodImageView, favImage, shareImage, quickCart;
 
     private ItemOnClickListener itemOnClickListener;
 
@@ -27,6 +27,7 @@ public class FoodViewHolder extends RecyclerView.ViewHolder implements View.OnCl
         foodImageView = (ImageView) itemView.findViewById(R.id.food_image);
         favImage = (ImageView) itemView.findViewById(R.id.fav);
         shareImage = (ImageView) itemView.findViewById(R.id.btnShare);
+        quickCart = (ImageView) itemView.findViewById(R.id.btn_quick_cart);
 
         itemView.setOnClickListener(this);
 

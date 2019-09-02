@@ -21,6 +21,7 @@ import com.android.eatit.Common.Common;
 import com.android.eatit.Database.Database;
 import com.android.eatit.Interface.ItemOnClickListener;
 import com.android.eatit.Model.Food;
+import com.android.eatit.Model.Order;
 import com.android.eatit.ViewHolder.FoodViewHolder;
 import com.facebook.CallbackManager;
 import com.facebook.share.model.SharePhoto;
@@ -285,6 +286,20 @@ public class FoodList extends AppCompatActivity {
                         Picasso.with(getApplicationContext())
                                 .load(model.getImage())
                                 .into(target);
+                    }
+                });
+
+                viewHolder.quickCart.setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View view) {
+                        new Database(getBaseContext()).addToCart(new Order(
+                                adapter.getRef(position).getKey(),
+                                model.getName(),
+                                "1",
+                                model.getPrice(),
+                                model.getDiscount()
+                        ));
+                        Toast.makeText(FoodList.this, "Added To Cart", Toast.LENGTH_SHORT).show();
                     }
                 });
 
