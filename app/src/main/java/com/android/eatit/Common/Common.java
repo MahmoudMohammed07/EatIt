@@ -11,6 +11,8 @@ import com.android.eatit.Remote.RetrofitClient;
 public class Common {
     public static User currentUser;
 
+    public static String PHONE_TEXT = "userText";
+
     private static final String BASE_URL = "https://fcm.googleapis.com/";
 
     public static final String DELETE = "Delete";
