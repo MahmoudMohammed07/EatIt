@@ -43,6 +43,24 @@
             app:met_primaryColor="@color/colorPrimary"
             app:met_singleLineEllipsis="true" />
 
+        <RadioGroup
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content">
+
+            <RadioButton
+                android:id="@+id/rbShipToAddress"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="Ship To This Address" />
+
+            <RadioButton
+                android:id="@+id/rbHomeAddress"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="Home Address" />
+
+        </RadioGroup>
+
     </LinearLayout>
 
 
